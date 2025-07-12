@@ -10,17 +10,21 @@ dotenv.config();
 
 const app = express();
 
+// 👉 Handle preflight requests (OPTIONS)
+app.options("*", cors());
+
+app.use(
+  cors({
+    origin: [
+      "http://localhost:4001",
+      "https://green-chats-apps.vercel.app"
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    credentials: true,
+  })
+);
+
 app.use(express.json());
-
-app.use(cors({
-  origin: [
-    "http://localhost:4001",                 // for local dev
-    "https://green-chats-apps.vercel.app"    // ✅ your live frontend
-  ],
-  methods: ["POST", "GET"],
-  credentials: true,
-}));
-
 app.use(cookieParser());
 
 // MongoDB connect
@@ -35,6 +39,7 @@ try {
 app.use("/api/user", userRoute);
 app.use("/api/message", messageRoute);
 
+// Default route
 app.get("/", (req, res) => {
   res.send("✅ Green Chats Backend is Live");
 });
